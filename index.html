@@ -3,41 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>NEON BLAST ULTRA</title>
+<title>NEON BLOCK BLAST</title>
 <style>
   * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; touch-action: none; }
   html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #03050c; color: #f8fafc; font-family: system-ui, sans-serif; }
-  body { display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 8px 6px 58px; background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #03050c 75%); }
-  .top-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 410px; padding: 6px 12px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 16px; }
-  .crown-box { display: flex; align-items: center; gap: 4px; color: #fbbf24; font-weight: 800; font-size: 0.9rem; }
-  .lvl-tag { font-size: 0.7rem; font-weight: 900; color: #38bdf8; }
+  body { display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 10px 6px 56px; background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #03050c 75%); transition: background 0.8s; }
+  body.fever { background: radial-gradient(circle at 50% 20%, #7c2d12 0%, #09030c 75%) !important; }
+  .top-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 410px; padding: 6px 12px; background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(56, 189, 248, 0.45); border-radius: 16px; }
+  .crown-box { display: flex; align-items: center; gap: 6px; color: #fbbf24; font-weight: 800; font-size: 0.88rem; }
+  .streak-pill { background: rgba(249, 115, 22, 0.2); border: 1px solid #f97316; color: #fdba74; padding: 1px 6px; border-radius: 8px; font-size: 0.72rem; }
+  .lvl-tag { font-size: 0.7rem; font-weight: 900; color: #38bdf8; margin-top: 2px; }
   .score-main { font-size: 2.1rem; font-weight: 900; color: #fff; line-height: 1; text-shadow: 0 0 20px rgba(56, 189, 248, 0.85); }
-  .xp-bar { width: 90px; height: 4px; background: rgba(255,255,255,0.12); border-radius: 4px; margin: 4px auto 0; overflow: hidden; }
+  .xp-bar { width: 92px; height: 4px; background: rgba(255,255,255,0.12); border-radius: 4px; margin: 4px auto 0; overflow: hidden; }
   .xp-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #00f0ff, #ff007f); transition: width 0.3s; }
   .combo-badge { background: linear-gradient(135deg, #ec4899, #8b5cf6); padding: 4px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; opacity: 0; transition: opacity 0.2s; }
   .lang-btn { background: #1e293b; border: 1px solid #38bdf8; color: #38bdf8; border-radius: 8px; padding: 4px 8px; font-size: 0.75rem; font-weight: 900; }
   .board-wrap { position: relative; display: flex; justify-content: center; align-items: center; width: 100%; flex: 1; }
-  canvas#game { border-radius: 18px; background: #070a16; border: 2px solid #38bdf8; box-shadow: 0 0 35px rgba(14, 165, 233, 0.3); }
-  #hype { position: absolute; pointer-events: none; font-size: 2rem; font-weight: 900; color: #fde047; text-shadow: 0 4px 25px rgba(234, 179, 8, 1), 0 0 12px #f43f5e; opacity: 0; transform: scale(0.4); transition: all 0.35s ease-out; }
+  canvas#game { border-radius: 18px; background: #070a16; border: 2px solid #38bdf8; box-shadow: 0 0 35px rgba(14, 165, 233, 0.3); transition: border-color 0.3s, box-shadow 0.3s; }
+  body.fever canvas#game { border-color: #fbbf24; box-shadow: 0 0 40px rgba(251, 191, 36, 0.55); }
+  #hype { position: absolute; pointer-events: none; font-size: 1.9rem; font-weight: 900; color: #fde047; text-shadow: 0 4px 25px rgba(234, 179, 8, 1), 0 0 12px #f43f5e; opacity: 0; transform: scale(0.4); transition: all 0.35s ease-out; text-align: center; }
   .powers { display: flex; gap: 8px; justify-content: center; width: 100%; max-width: 410px; }
   .pwr-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border: 1px solid #38bdf8; color: #e0f2fe; border-radius: 14px; padding: 9px 6px; font-size: 0.78rem; font-weight: 800; }
   .pwr-btn.active { border-color: #f43f5e; box-shadow: 0 0 15px #f43f5e; color: #fda4af; }
-  .pwr-btn.ad-ready { border-color: #fbbf24; }
+  .pwr-btn.ad-ready { border-color: #fbbf24; animation: pulseAd 1.4s infinite; }
+  @keyframes pulseAd { 0%, 100% { box-shadow: 0 0 6px rgba(251,191,36,0.3); } 50% { box-shadow: 0 0 16px rgba(251,191,36,0.8); } }
   .pwr-count { background: #38bdf8; color: #020617; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 900; }
   .ad-ready .pwr-count { background: #fbbf24; }
   .modal { position: absolute; inset: 0; background: rgba(2, 6, 23, 0.94); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 20; border-radius: 18px; padding: 16px; text-align: center; }
   .modal h2 { font-size: 1.8rem; color: #f43f5e; margin: 0 0 8px; }
   .modal p { font-size: 1rem; color: #cbd5e1; margin: 0 0 18px; }
-  .btn-revive { background: linear-gradient(135deg, #f59e0b, #ea580c); color: #fff; border: none; border-radius: 14px; padding: 12px 24px; font-size: 1rem; font-weight: 900; margin-bottom: 10px; width: 85%; }
-  .play-again { background: linear-gradient(135deg, #06b6d4, #ec4899); color: #fff; border: none; border-radius: 14px; padding: 12px 24px; font-size: 1rem; font-weight: 900; width: 85%; }
-  #ad-overlay { position: fixed; inset: 0; background: #020617; z-index: 99; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center; }
-  .ad-box { border: 2px solid #fbbf24; border-radius: 20px; padding: 24px; max-width: 340px; width: 100%; background: #0f172a; }
-  .ad-timer { font-size: 2.5rem; font-weight: 900; color: #fbbf24; margin: 12px 0; }
+  .btn-revive { background: linear-gradient(135deg, #f59e0b, #ea580c); color: #fff; border: none; border-radius: 14px; padding: 12px 20px; font-size: 0.95rem; font-weight: 900; margin-bottom: 10px; width: 88%; }
+  .play-again { background: linear-gradient(135deg, #06b6d4, #ec4899); color: #fff; border: none; border-radius: 14px; padding: 12px 20px; font-size: 0.95rem; font-weight: 900; width: 88%; }
+  #ad-overlay { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.98); z-index: 99; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center; }
+  .ad-box { border: 2px solid #fbbf24; border-radius: 22px; padding: 26px 20px; max-width: 340px; width: 100%; background: #0f172a; box-shadow: 0 0 35px rgba(251, 191, 36, 0.25); }
+  .ad-timer { font-size: 2.8rem; font-weight: 900; color: #fbbf24; margin: 10px 0; }
+  .ad-prog { width: 100%; height: 6px; background: #1e293b; border-radius: 6px; overflow: hidden; margin-top: 12px; }
+  .ad-prog-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #fbbf24, #f97316); transition: width 1s linear; }
 </style>
 </head>
 <body>
 <div class="top-bar">
-  <div><div class="crown-box">👑 <span id="best">0</span></div><div class="lvl-tag" id="lvl-txt">NÍVEL 1</div></div>
+  <div>
+    <div class="crown-box">👑 <span id="best">0</span> <span class="streak-pill" id="streak-txt">🔥 1d</span></div>
+    <div class="lvl-tag" id="lvl-txt">NÍVEL 1</div>
+  </div>
   <div style="text-align:center"><div class="score-main" id="score">0</div><div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div></div>
   <div style="display:flex;align-items:center;gap:6px"><div class="combo-badge" id="combo-badge">COMBO x2</div><button class="lang-btn" id="lang-btn" onclick="cycleLang()">PT</button></div>
 </div>
@@ -47,7 +56,7 @@
   <div class="modal" id="gameover">
     <h2 id="go-title">SEM ESPAÇO!</h2>
     <p id="final-stats">Pontos: 0</p>
-    <button class="btn-revive" id="btn-revive" onclick="reviveWithAd()">🎬 CONTINUAR (ANÚNCIO)</button>
+    <button class="btn-revive" id="btn-revive" onclick="reviveWithAd()">🎬 CONTINUAR (15s)</button>
     <button class="play-again" id="go-btn" onclick="resetGame()">JOGAR NOVAMENTE</button>
   </div>
 </div>
@@ -58,17 +67,18 @@
 </div>
 <div id="ad-overlay">
   <div class="ad-box">
-    <div style="color:#38bdf8;font-weight:900;letter-spacing:1px" id="ad-title">PUBLICIDADE PATROCINADA</div>
-    <div class="ad-timer" id="ad-sec">5</div>
-    <div style="color:#94a3b8;font-size:0.9rem" id="ad-desc">A desbloquear a tua recompensa...</div>
+    <div style="color:#38bdf8;font-weight:900;letter-spacing:1px;font-size:0.85rem" id="ad-title">PUBLICIDADE PATROCINADA</div>
+    <div class="ad-timer" id="ad-sec">15</div>
+    <div style="color:#cbd5e1;font-size:0.9rem" id="ad-desc">A desbloquear +2 cargas...</div>
+    <div class="ad-prog"><div class="ad-prog-fill" id="ad-bar"></div></div>
   </div>
 </div>
 <script>
 const LANGS = {
-  pt: { lvl: 'NÍVEL', bomb: 'BOMBA', rot: 'RODAR', swap: 'TROCAR', over: 'SEM ESPAÇO!', revive: '🎬 CONTINUAR (ANÚNCIO)', again: 'JOGAR NOVAMENTE', pts: 'Pontos', rec: 'Recorde', clear: 'TABULEIRO LIMPO!', adT: 'PUBLICIDADE', adD: 'A desbloquear recompensa...', words: 'BOM!,EXCELENTE!,INCRÍVEL!,LENDÁRIO!,DIVINAL!'.split(',') },
-  en: { lvl: 'LEVEL', bomb: 'BOMB', rot: 'ROTATE', swap: 'SWAP', over: 'NO SPACE!', revive: '🎬 REVIVE (WATCH AD)', again: 'PLAY AGAIN', pts: 'Score', rec: 'Best', clear: 'BOARD CLEARED!', adT: 'SPONSORED AD', adD: 'Unlocking your reward...', words: 'GOOD!,GREAT!,INSANE!,LEGENDARY!,GODLIKE!'.split(',') },
-  es: { lvl: 'NIVEL', bomb: 'BOMBA', rot: 'ROTAR', swap: 'CAMBIAR', over: '¡SIN ESPACIO!', revive: '🎬 CONTINUAR (ANUNCIO)', again: 'JUGAR DE NUEVO', pts: 'Puntos', rec: 'Récord', clear: '¡TABLERO LIMPIO!', words: '¡BIEN!,¡GENIAL!,¡INCREÍBLE!,¡LEGENDARIO!,¡SUPREMO!'.split(',') },
-  fr: { lvl: 'NIVEAU', bomb: 'BOMBE', rot: 'PIVOTER', swap: 'CHANGER', over: 'PLUS DE PLACE !', revive: '🎬 CONTINUER (PUB)', again: 'REJOUER', pts: 'Score', rec: 'Record', clear: 'PLATEAU VIDE !', words: 'BIEN !,SUPER !,INCROYABLE !,LÉGENDAIRE !,DIVIN !'.split(',') }
+  pt: { lvl: 'NÍVEL', bomb: 'BOMBA', rot: 'RODAR', swap: 'TROCAR', over: 'SEM ESPAÇO!', revive: '🎬 CONTINUAR (ANÚNCIO 15s)', again: 'JOGAR NOVAMENTE', pts: 'Pontos', rec: 'Recorde', clear: 'TABULEIRO LIMPO!', fever: '🔥 MODO FEBRE 2X!', adT: 'PUBLICIDADE PATROCINADA', adD: 'A desbloquear +2 cargas...', words: 'BOM!,EXCELENTE!,INCRÍVEL!,LENDÁRIO!,DIVINAL!'.split(',') },
+  en: { lvl: 'LEVEL', bomb: 'BOMB', rot: 'ROTATE', swap: 'SWAP', over: 'NO SPACE!', revive: '🎬 REVIVE (15s AD)', again: 'PLAY AGAIN', pts: 'Score', rec: 'Best', clear: 'BOARD CLEARED!', fever: '🔥 FEVER MODE 2X!', adT: 'SPONSORED AD', adD: 'Unlocking +2 charges...', words: 'GOOD!,GREAT!,INSANE!,LEGENDARY!,GODLIKE!'.split(',') },
+  es: { lvl: 'NIVEL', bomb: 'BOMBA', rot: 'ROTAR', swap: 'CAMBIAR', over: '¡SIN ESPACIO!', revive: '🎬 CONTINUAR (ANUNCIO 15s)', again: 'JUGAR DE NUEVO', pts: 'Puntos', rec: 'Récord', clear: '¡TABLERO LIMPIO!', fever: '🔥 ¡MODO FIEBRE 2X!', adT: 'PUBLICIDAD PATROCINADA', adD: 'Desbloqueando +2 cargas...', words: '¡BIEN!,¡GENIAL!,¡INCREÍBLE!,¡LEGENDARIO!,¡SUPREMO!'.split(',') },
+  fr: { lvl: 'NIVEAU', bomb: 'BOMBE', rot: 'PIVOTER', swap: 'CHANGER', over: 'PLUS DE PLACE !', revive: '🎬 CONTINUER (PUB 15s)', again: 'REJOUER', pts: 'Score', rec: 'Record', clear: 'PLATEAU VIDE !', fever: '🔥 MODE FIÈVRE 2X !', adT: 'PUBLICITÉ SPONSORISÉE', adD: 'Déblocage de +2 charges...', words: 'BIEN !,SUPER !,INCROYABLE !,LÉGENDAIRE !,DIVIN !'.split(',') }
 };
 const LANG_KEYS = 'pt,en,es,fr'.split(',');
 let curLang = localStorage.getItem('nbLang') || (LANG_KEYS.includes(navigator.language.slice(0,2)) ? navigator.language.slice(0,2) : 'en');
@@ -89,6 +99,18 @@ let level = 1, combo = 0, bombs = 2, rots = 2, swaps = 2, bombMode = false, adAc
 let particles = [], shockwaves = [], floatTexts = [], shake = 0;
 document.getElementById('best').innerText = best;
 
+// Sequência Diária (Daily Streak)
+(function initStreak() {
+  const today = new Date().toDateString(), last = localStorage.getItem('nbLastDay');
+  let st = Number(localStorage.getItem('nbStreak') || 1);
+  if (last && last !== today) {
+    const diff = (new Date(today) - new Date(last)) / 86400000;
+    st = diff === 1 ? st + 1 : 1;
+  }
+  localStorage.setItem('nbLastDay', today); localStorage.setItem('nbStreak', st);
+  document.getElementById('streak-txt').innerText = `🔥 ${st}d`;
+})();
+
 function updatePowerUI() {
   const map = [{ id: 'bomb', val: bombs }, { id: 'rot', val: rots }, { id: 'swap', val: swaps }];
   map.forEach(p => {
@@ -105,13 +127,15 @@ function triggerRewardedAd(onReward) {
     onReward(); return;
   }
   adActive = true;
-  const ov = document.getElementById('ad-overlay'), secEl = document.getElementById('ad-sec');
-  let left = 5; secEl.innerText = left; ov.style.display = 'flex';
+  const ov = document.getElementById('ad-overlay'), secEl = document.getElementById('ad-sec'), bar = document.getElementById('ad-bar');
+  let total = 15, left = total;
+  secEl.innerText = left; bar.style.width = '0%'; ov.style.display = 'flex';
   const iv = setInterval(() => {
     left--; secEl.innerText = left;
+    bar.style.width = (((total - left) / total) * 100) + '%';
     if (left <= 0) {
       clearInterval(iv); ov.style.display = 'none'; adActive = false;
-      onReward(); tone(880, 'triangle', 0.3, 0.15); buzz(40);
+      onReward(); tone(880, 'triangle', 0.35, 0.16); buzz(50);
     }
   }, 1000);
 }
@@ -154,7 +178,7 @@ function checkGameOver() {
   for (let p of act) for (let r = 0; r < GRID; r++) for (let c = 0; c < GRID; c++) if (canPlace(p.shape, c, r)) return;
   setTimeout(() => { const t = LANGS[curLang]; document.getElementById('final-stats').innerText = `${t.pts}: ${score}  |  ${t.lvl}: ${level}  |  ${t.rec}: ${best}`; document.getElementById('gameover').style.display = 'flex'; tone(110, 'sawtooth', 0.5, 0.15); buzz(120); }, 450);
 }
-function showHype(txt) { const el = document.getElementById('hype'); el.innerText = txt; el.style.opacity = 1; el.style.transform = 'scale(1.15)'; setTimeout(() => { el.style.opacity = 0; el.style.transform = 'scale(0.5)'; }, 900); }
+function showHype(txt) { const el = document.getElementById('hype'); el.innerText = txt; el.style.opacity = 1; el.style.transform = 'scale(1.15)'; setTimeout(() => { el.style.opacity = 0; el.style.transform = 'scale(0.5)'; }, 950); }
 function burst(gx, gy, ci) {
   const cx = boardX + (gx + 0.5) * cell, cy = boardY + (gy + 0.5) * cell, col = PALETTE[ci]?.main || '#38bdf8';
   for (let i = 0; i < 12; i++) { const a = Math.random() * 6.28, s = 1.8 + Math.random() * 5; particles.push({ x: cx, y: cy, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 1, col, size: 3 + Math.random() * 4.5 }); }
@@ -165,38 +189,48 @@ function clearLines() {
   for (let c = 0; c < GRID; c++) { let f = true; for (let r = 0; r < GRID; r++) if (!grid[r][c]) f = false; if (f) cols.push(c); }
   const tot = rows.length + cols.length;
   if (tot > 0) {
-    combo++; const set = new Set();
+    combo++;
+    const isFever = combo >= 3;
+    document.body.classList.toggle('fever', isFever);
+    const mult = isFever ? 2 : 1;
+    const set = new Set();
     rows.forEach(r => { for (let c = 0; c < GRID; c++) set.add(`${r},${c}`); });
     cols.forEach(c => { for (let r = 0; r < GRID; r++) set.add(`${r},${c}`); });
     let lastCol = '#00f0ff';
     set.forEach(k => { const [r, c] = k.split(',').map(Number); lastCol = PALETTE[grid[r][c]]?.main || lastCol; burst(c, r, grid[r][c]); grid[r][c] = 0; });
-    let pts = tot * 100 * tot * level + (combo > 1 ? combo * 60 * level : 0);
-    const empty = grid.every(r => r.every(v => !v)); if (empty) pts += 1000 * level;
-    score += pts; shake = Math.min(16, tot * 4 + combo * 2.5); buzz(35 + tot * 15);
-    shockwaves.push({ x: W / 2, y: boardY + cell * 4, r: 15, maxR: W * 0.75, col: lastCol, life: 1 });
+    let pts = (tot * 100 * tot * level + (combo > 1 ? combo * 60 * level : 0)) * mult;
+    const empty = grid.every(r => r.every(v => !v)); if (empty) pts += 1000 * level * mult;
+    score += pts; shake = Math.min(18, tot * 4 + combo * 2.5); buzz(35 + tot * 15);
+    shockwaves.push({ x: W / 2, y: boardY + cell * 4, r: 15, maxR: W * 0.78, col: isFever ? '#fbbf24' : lastCol, life: 1 });
     const notes = '523,587,659,784,880,1046,1318'.split(',').map(Number);
     tone(notes[Math.min(6, Math.max(0, tot + combo - 2))], 'triangle', 0.32, 0.15);
-    const badge = document.getElementById('combo-badge'); if (combo > 1) { badge.innerText = `COMBO x${combo}`; badge.style.opacity = 1; } else badge.style.opacity = 0;
-    if (empty) showHype(LANGS[curLang].clear); else if (tot >= 2 || combo >= 2) showHype(LANGS[curLang].words[Math.min(4, Math.max(tot, combo) - 1)]);
+    const badge = document.getElementById('combo-badge');
+    if (combo > 1) { badge.innerText = isFever ? `🔥 2X COMBO x${combo}` : `COMBO x${combo}`; badge.style.opacity = 1; } else badge.style.opacity = 0;
+    if (empty) showHype(LANGS[curLang].clear);
+    else if (combo === 3) showHype(LANGS[curLang].fever);
+    else if (tot >= 2 || combo >= 2) showHype(LANGS[curLang].words[Math.min(4, Math.max(tot, combo) - 1)]);
     floatTexts.push({ x: W / 2, y: boardY + cell * 4, txt: `+${pts}`, life: 1 });
-  } else { combo = 0; document.getElementById('combo-badge').style.opacity = 0; }
+  } else {
+    combo = 0; document.body.classList.remove('fever');
+    document.getElementById('combo-badge').style.opacity = 0;
+  }
   const nl = Math.floor(score / 1500) + 1;
   document.getElementById('xp-fill').style.width = (((score % 1500) / 1500) * 100) + '%';
   if (nl > level) { level = nl; document.getElementById('lvl-txt').innerText = `${LANGS[curLang].lvl} ${level}`; document.body.style.background = BG_THEMES[(level - 1) % 4]; showHype(`${LANGS[curLang].lvl} ${level}!`); tone(880, 'triangle', 0.4, 0.15); }
   if (score > best) { best = score; localStorage.setItem('neonBlastUltraBest', best); document.getElementById('best').innerText = best; }
 }
 function useBomb() {
-  if (bombs <= 0) { triggerRewardedAd(() => { bombs = 1; updatePowerUI(); }); return; }
+  if (bombs <= 0) { triggerRewardedAd(() => { bombs = 2; updatePowerUI(); }); return; }
   bombMode = !bombMode; document.getElementById('btn-bomb').classList.toggle('active', bombMode); tone(420, 'sine', 0.08);
 }
 function useRotate() {
-  if (rots <= 0) { triggerRewardedAd(() => { rots = 1; updatePowerUI(); }); return; }
+  if (rots <= 0) { triggerRewardedAd(() => { rots = 2; updatePowerUI(); }); return; }
   rots--; updatePowerUI();
   tray.forEach(p => { if (p) { p.shape = p.shape.at(0).map((_, i) => p.shape.map(r => r[i]).reverse()); p.scale = 0.5; } });
   tone(520, 'triangle', 0.12); buzz(15); checkGameOver();
 }
 function useSwap() {
-  if (swaps <= 0) { triggerRewardedAd(() => { swaps = 1; updatePowerUI(); }); return; }
+  if (swaps <= 0) { triggerRewardedAd(() => { swaps = 2; updatePowerUI(); }); return; }
   swaps--; updatePowerUI(); refillTray(); tone(620, 'triangle', 0.15); buzz(20);
 }
 function reviveWithAd() {
@@ -207,7 +241,8 @@ function reviveWithAd() {
 }
 function resetGame() {
   grid = Array.from({ length: GRID }, () => Array(GRID).fill(0)); score = 0; displayScore = 0; level = 1; combo = 0; bombs = 2; rots = 2; swaps = 2; bombMode = false;
-  document.body.style.background = BG_THEMES.at(0); document.getElementById('lvl-txt').innerText = `${LANGS[curLang].lvl} 1`; document.getElementById('xp-fill').style.width = '0%';
+  document.body.classList.remove('fever'); document.body.style.background = BG_THEMES.at(0);
+  document.getElementById('lvl-txt').innerText = `${LANGS[curLang].lvl} 1`; document.getElementById('xp-fill').style.width = '0%';
   document.getElementById('btn-bomb').classList.remove('active'); document.getElementById('gameover').style.display = 'none';
   updatePowerUI(); refillTray();
 }
@@ -245,9 +280,9 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-function getPos(e) { const rect = cvs.getBoundingClientRect(), t = e.touches ? e.touches.item(0) : e; return { x: (t.clientX - rect.left) * (W / rect.width), y: (t.clientY - rect.top) * (H / rect.height) }; }
-cvs.addEventListener('touchstart', e => {
-  e.preventDefault(); const pos = getPos(e);
+function getPos(e) { const rect = cvs.getBoundingClientRect(); return { x: (e.clientX - rect.left) * (W / rect.width), y: (e.clientY - rect.top) * (H / rect.height) }; }
+cvs.addEventListener('pointerdown', e => {
+  e.preventDefault(); cvs.setPointerCapture(e.pointerId); const pos = getPos(e);
   if (bombMode) {
     const gx = Math.floor((pos.x - boardX) / cell), gy = Math.floor((pos.y - boardY) / cell);
     if (gx >= 0 && gx < GRID && gy >= 0 && gy < GRID) {
@@ -255,83 +290,23 @@ cvs.addEventListener('touchstart', e => {
       bombs--; updatePowerUI(); bombMode = false; document.getElementById('btn-bomb').classList.remove('active'); shake = 14; tone(120, 'sawtooth', 0.3, 0.15); buzz(60); checkGameOver();
     } return;
   }
-  if (pos.y > boardY + cell * 8) {
+  if (pos.y > boardY + cell * 7.8) {
     const idx = Math.floor((pos.x - boardX) / (cell * 8 / 3));
     if (idx >= 0 && idx < 3 && tray[idx]) { dragging = { idx, piece: tray[idx] }; dragX = pos.x; dragY = pos.y; tone(320, 'sine', 0.06, 0.05); buzz(10); }
   }
-}, { passive: false });
-cvs.addEventListener('touchmove', e => {
-  e.preventDefault(); if (!dragging) return;
+});
+cvs.addEventListener('pointermove', e => {
+  if (!dragging) return; e.preventDefault();
   const pos = getPos(e); dragX = pos.x; dragY = pos.y; const sh = dragging.piece.shape;
   const gx = Math.round((dragX - (sh.at(0).length * cell) / 2 - boardX) / cell), gy = Math.round((dragY - sh.length * cell - cell * 0.95 - boardY) / cell);
   hoverPos = canPlace(sh, gx, gy) ? { gx, gy } : null;
-}, { passive: false });
-cvs.addEventListener('touchend', e => {
+});
+cvs.addEventListener('pointerup', e => {
   if (!dragging) return;
   if (hoverPos) {
     const sh = dragging.piece.shape; let b = 0;
     for (let r = 0; r < sh.length; r++) for (let c = 0; c < sh[r].length; c++) if (sh[r][c]) { grid[hoverPos.gy + r][hoverPos.gx + c] = dragging.piece.color; b++; }
     score += b * 10 * level; tray[dragging.idx] = null; tone(240, 'sine', 0.08, 0.07); buzz(15); clearLines();
-    if (tray.every(p => !p)) refillTray(); else checkGameOver();
-  }
-  dragging = null; hoverPos = null;
-});
-
-resize(); refillTray(); loop();
-</script>
-</body>
-</html>
-function getPos(e) {
-  const rect = cvs.getBoundingClientRect();
-  return { x: (e.clientX - rect.left) * (W / rect.width), y: (e.clientY - rect.top) * (H / rect.height) };
-}
-
-cvs.addEventListener('pointerdown', e => {
-  e.preventDefault();
-  cvs.setPointerCapture(e.pointerId);
-  const pos = getPos(e);
-  if (bombMode) {
-    const gx = Math.floor((pos.x - boardX) / cell), gy = Math.floor((pos.y - boardY) / cell);
-    if (gx >= 0 && gx < GRID && gy >= 0 && gy < GRID) {
-      for (let r = gy - 1; r <= gy + 1; r++)
-        for (let c = gx - 1; c <= gx + 1; c++)
-          if (r >= 0 && r < GRID && c >= 0 && c < GRID && grid[r][c]) { burst(c, r, grid[r][c]); grid[r][c] = 0; }
-      bombs--; updatePowerUI(); bombMode = false;
-      document.getElementById('btn-bomb').classList.remove('active');
-      shake = 14; tone(120, 'sawtooth', 0.3, 0.15); buzz(60); checkGameOver();
-    }
-    return;
-  }
-  if (pos.y > boardY + cell * 7.8) {
-    const idx = Math.floor((pos.x - boardX) / (cell * 8 / 3));
-    if (idx >= 0 && idx < 3 && tray[idx]) {
-      dragging = { idx, piece: tray[idx] };
-      dragX = pos.x; dragY = pos.y;
-      tone(320, 'sine', 0.06, 0.05); buzz(10);
-    }
-  }
-});
-
-cvs.addEventListener('pointermove', e => {
-  if (!dragging) return;
-  e.preventDefault();
-  const pos = getPos(e);
-  dragX = pos.x; dragY = pos.y;
-  const sh = dragging.piece.shape;
-  const gx = Math.round((dragX - (sh.at(0).length * cell) / 2 - boardX) / cell);
-  const gy = Math.round((dragY - sh.length * cell - cell * 0.95 - boardY) / cell);
-  hoverPos = canPlace(sh, gx, gy) ? { gx, gy } : null;
-});
-
-cvs.addEventListener('pointerup', e => {
-  if (!dragging) return;
-  if (hoverPos) {
-    const sh = dragging.piece.shape; let b = 0;
-    for (let r = 0; r < sh.length; r++)
-      for (let c = 0; c < sh[r].length; c++)
-        if (sh[r][c]) { grid[hoverPos.gy + r][hoverPos.gx + c] = dragging.piece.color; b++; }
-    score += b * 10 * level; tray[dragging.idx] = null;
-    tone(240, 'sine', 0.08, 0.07); buzz(15); clearLines();
     if (tray.every(p => !p)) refillTray(); else checkGameOver();
   }
   dragging = null; hoverPos = null;
