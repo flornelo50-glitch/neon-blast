@@ -51,7 +51,7 @@
   }
   .board-wrap {
     position: relative; display: flex; justify-content: center; align-items: center;
-    width: 100%; flex: 1; max-height: 58vh;
+    width: 100%; flex: 1; max-height: 60vh;
   }
   canvas#game {
     border-radius: 18px; background: rgba(7, 10, 22, 0.94);
@@ -138,18 +138,25 @@ let curLang = localStorage.getItem('nbLang') || (LANG_KEYS.includes(navigator.la
 
 const PALETTE = [
   null,
-  { main: '#00f0ff', light: '#cffafe', glow: 'rgba(0,240,255,0.6)' },
-  { main: '#ff007f', light: '#fce7f3', glow: 'rgba(255,0,127,0.6)' },
-  { main: '#00ff66', light: '#dcfce7', glow: 'rgba(0,255,102,0.6)' },
-  { main: '#ffbe0b', light: '#fef9c3', glow: 'rgba(255,190,11,0.6)' },
-  { main: '#a855f7', light: '#f3e8ff', glow: 'rgba(168,85,247,0.6)' },
-  { main: '#ff5400', light: '#ffedd5', glow: 'rgba(255,84,0,0.6)' }
+  { main: '#00f0ff', light: '#cffafe' },
+  { main: '#ff007f', light: '#fce7f3' },
+  { main: '#00ff66', light: '#dcfce7' },
+  { main: '#ffbe0b', light: '#fef9c3' },
+  { main: '#a855f7', light: '#f3e8ff' },
+  { main: '#ff5400', light: '#ffedd5' }
 ];
 
-// Peças divididas por tier de dificuldade (desbloqueiam conforme o nível sobe)
-const TIER1 = [ [], [], [,], [], [,,], [], [,], [,,], [,,] ];
-const TIER2 = [ [,,], [,,], [,], [,], [,], [,], [,,], [,,] ];
-const TIER3 = [ [,,,], [,,,,], [,], [,,], [,,], [,,] ];
+// Peças escritas em texto (seguras contra cortes de formatação)
+const TIER1 = [
+  '1', '11', '1|1', '11|11', '111', '1|1|1', '10|11', '01|11', '11|10', '11|01'
+];
+const TIER2 = [
+  '111|010', '010|111', '110|011', '011|110', '100|111', '001|111', '111|100', '111|001', '1111', '1|1|1|1'
+];
+const TIER3 = [
+  '111|111|111', '100|100|111', '001|001|111', '111|100|100', '111|001|001', '010|111|010', '11111', '1|1|1|1|1'
+];
+const parseShape = str => str.split('|').map(r => r.split('').map(Number));
 
 const BG_THEMES = [
   'radial-gradient(circle at 50% 20%, #1e1b4b 0%, #03050c 75%)',
@@ -216,8 +223,9 @@ function randPiece() {
   let pool = [...TIER1];
   if (level >= 2) pool = pool.concat(TIER2);
   if (level >= 4) pool = pool.concat(TIER3);
-  if (level >= 6) pool = pool.concat(TIER3); // Mais desafiante nos níveis altos
-  const shape = pool[Math.floor(Math.random() * pool.length)];
+  if (level >= 6) pool = pool.concat(TIER3);
+  const shapeStr = pool[Math.floor(Math.random() * pool.length)];
+  const shape = parseShape(shapeStr);
   const color = Math.floor(Math.random() * (PALETTE.length - 1)) + 1;
   return { shape, color, scale: 0.05 };
 }
@@ -355,7 +363,7 @@ function swapTray() {
 function resetGame() {
   grid = Array.from({ length: GRID }, () => Array(GRID).fill(0));
   score = 0; displayScore = 0; level = 1; combo = 0; bombs = 2; swaps = 2; bombMode = false;
-  document.body.style.background = BG_THEMES[0];
+  document.body.style.background = BG_THEMES.at(0);
   document.getElementById('lvl-txt').innerText = `${LANGS[curLang].lvl} 1`;
   document.getElementById('xp-fill').style.width = '0%';
   document.getElementById('cnt-bomb').innerText = bombs;
@@ -426,7 +434,7 @@ function loop() {
     if (!p || (dragging && dragging.idx === i)) continue;
     p.scale += (1 - p.scale) * 0.22;
     const slotX = boardX + (cell * 8 / 3) * (i + 0.5);
-    const pw = p.shape[0].length * trayCell * p.scale, ph = p.shape.length * trayCell * p.scale;
+    const pw = p.shape.at(0).length * trayCell * p.scale, ph = p.shape.length * trayCell * p.scale;
     const sx = slotX - pw / 2, sy = trayY + cell * 1.1 - ph / 2;
     for (let r = 0; r < p.shape.length; r++)
       for (let c = 0; c < p.shape[r].length; c++)
@@ -435,7 +443,7 @@ function loop() {
 
   if (dragging) {
     const sh = dragging.piece.shape;
-    const pw = sh[0].length * cell, ph = sh.length * cell;
+    const pw = sh.at(0).length * cell, ph = sh.length * cell;
     const sx = dragX - pw / 2, sy = dragY - ph - cell * 0.95;
     for (let r = 0; r < sh.length; r++)
       for (let c = 0; c < sh[r].length; c++)
