@@ -281,3 +281,63 @@ resize(); refillTray(); loop();
 </script>
 </body>
 </html>
+function getPos(e) {
+  const rect = cvs.getBoundingClientRect();
+  return { x: (e.clientX - rect.left) * (W / rect.width), y: (e.clientY - rect.top) * (H / rect.height) };
+}
+
+cvs.addEventListener('pointerdown', e => {
+  e.preventDefault();
+  cvs.setPointerCapture(e.pointerId);
+  const pos = getPos(e);
+  if (bombMode) {
+    const gx = Math.floor((pos.x - boardX) / cell), gy = Math.floor((pos.y - boardY) / cell);
+    if (gx >= 0 && gx < GRID && gy >= 0 && gy < GRID) {
+      for (let r = gy - 1; r <= gy + 1; r++)
+        for (let c = gx - 1; c <= gx + 1; c++)
+          if (r >= 0 && r < GRID && c >= 0 && c < GRID && grid[r][c]) { burst(c, r, grid[r][c]); grid[r][c] = 0; }
+      bombs--; updatePowerUI(); bombMode = false;
+      document.getElementById('btn-bomb').classList.remove('active');
+      shake = 14; tone(120, 'sawtooth', 0.3, 0.15); buzz(60); checkGameOver();
+    }
+    return;
+  }
+  if (pos.y > boardY + cell * 7.8) {
+    const idx = Math.floor((pos.x - boardX) / (cell * 8 / 3));
+    if (idx >= 0 && idx < 3 && tray[idx]) {
+      dragging = { idx, piece: tray[idx] };
+      dragX = pos.x; dragY = pos.y;
+      tone(320, 'sine', 0.06, 0.05); buzz(10);
+    }
+  }
+});
+
+cvs.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  e.preventDefault();
+  const pos = getPos(e);
+  dragX = pos.x; dragY = pos.y;
+  const sh = dragging.piece.shape;
+  const gx = Math.round((dragX - (sh.at(0).length * cell) / 2 - boardX) / cell);
+  const gy = Math.round((dragY - sh.length * cell - cell * 0.95 - boardY) / cell);
+  hoverPos = canPlace(sh, gx, gy) ? { gx, gy } : null;
+});
+
+cvs.addEventListener('pointerup', e => {
+  if (!dragging) return;
+  if (hoverPos) {
+    const sh = dragging.piece.shape; let b = 0;
+    for (let r = 0; r < sh.length; r++)
+      for (let c = 0; c < sh[r].length; c++)
+        if (sh[r][c]) { grid[hoverPos.gy + r][hoverPos.gx + c] = dragging.piece.color; b++; }
+    score += b * 10 * level; tray[dragging.idx] = null;
+    tone(240, 'sine', 0.08, 0.07); buzz(15); clearLines();
+    if (tray.every(p => !p)) refillTray(); else checkGameOver();
+  }
+  dragging = null; hoverPos = null;
+});
+
+resize(); refillTray(); loop();
+</script>
+</body>
+</html>
