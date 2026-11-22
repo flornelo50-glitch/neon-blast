@@ -126,7 +126,8 @@ function clearLines() {
     const empty = grid.every(r => r.every(v => !v)); if (empty) pts += 1000 * level;
     score += pts; shake = Math.min(16, tot * 4 + combo * 2.5); buzz(35 + tot * 15);
     shockwaves.push({ x: W / 2, y: boardY + cell * 4, r: 15, maxR: W * 0.75, col: lastCol, life: 1 });
-    const notes =; tone(notes[Math.min(6, Math.max(0, tot + combo - 2))], 'triangle', 0.32, 0.15);
+    const notes= '523,587,659,784,880,1046,1318'.split(',').map(Number); 
+ tone(notes[Math.min(6, Math.max(0, tot + combo - 2))], 'triangle', 0.32, 0.15);
     const badge = document.getElementById('combo-badge'); if (combo > 1) { badge.innerText = `COMBO x${combo}`; badge.style.opacity = 1; } else badge.style.opacity = 0;
     if (empty) showHype(LANGS[curLang].clear); else if (tot >= 2 || combo >= 2) showHype(LANGS[curLang].words[Math.min(5, Math.max(tot, combo))]);
     floatTexts.push({ x: W / 2, y: boardY + cell * 4, txt: `+${pts}`, life: 1 });
