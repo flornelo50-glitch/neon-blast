@@ -7,14 +7,13 @@
 <style>
   * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; touch-action: none; }
   html, body {
-    margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden;
+    margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
     background: #03050c; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif;
   }
   body {
     display: flex; flex-direction: column; justify-content: space-between; align-items: center;
     padding: 8px 8px 12px;
     background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #03050c 75%);
-    transition: background 1s ease;
   }
   .top-bar {
     display: flex; justify-content: space-between; align-items: center;
@@ -40,9 +39,8 @@
   }
   .board-wrap { position: relative; display: flex; justify-content: center; align-items: center; width: 100%; flex: 1; }
   canvas#game {
-    border-radius: 18px; background: rgba(7, 10, 22, 0.94);
-    border: 2px solid rgba(56, 189, 248, 0.45);
-    box-shadow: 0 0 40px rgba(14, 165, 233, 0.28);
+    border-radius: 18px; background: #070a16;
+    border: 2px solid #38bdf8; box-shadow: 0 0 35px rgba(14, 165, 233, 0.3);
   }
   #hype {
     position: absolute; pointer-events: none; font-size: 2rem; font-weight: 900;
@@ -91,7 +89,7 @@
 </div>
 
 <div class="board-wrap">
-  <canvas id="game"></canvas>
+  <canvas id="game" width="320" height="440"></canvas>
   <div id="hype">PERFEITO!</div>
   <div id="gameover">
     <h2 id="go-title">SEM ESPAÇO!</h2>
@@ -137,7 +135,7 @@ const BG_THEMES = [
 
 const cvs = document.getElementById('game'), ctx = cvs.getContext('2d');
 const GRID = 8;
-let W, H, cell, boardX, boardY, trayY, trayCell;
+let W = 320, H = 440, cell = 36, boardX = 16, boardY = 12, trayY = 320, trayCell = 20;
 let grid = Array.from({ length: GRID }, () => Array(GRID).fill(0));
 let tray = [null, null, null];
 let dragging = null, dragX = 0, dragY = 0, hoverPos = null;
@@ -176,15 +174,15 @@ function tone(freq, type = 'sine', dur = 0.12, vol = 0.08) {
 function buzz(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {} }
 
 function resize() {
-  const maxW = Math.min(window.innerWidth - 16, 410);
-  const maxH = window.innerHeight * 0.75;
-  cell = Math.max(28, Math.floor(Math.min(maxW / 8.5, maxH / 11.7)));
-  W = cvs.width = cell * 8.5;
-  H = cvs.height = cell * 11.7;
+  const maxW = Math.min(window.innerWidth - 16, 400);
+  const maxH = Math.max(360, window.innerHeight - 135);
+  cell = Math.max(30, Math.floor(Math.min(maxW / 8.5, maxH / 11.6)));
+  W = cvs.width = Math.floor(cell * 8.5);
+  H = cvs.height = Math.floor(cell * 11.6);
   boardX = (W - cell * 8) / 2;
   boardY = cell * 0.3;
-  trayY = boardY + cell * 8.45;
-  trayCell = cell * 0.55;
+  trayY = boardY + cell * 8.4;
+  trayCell = cell * 0.54;
 }
 window.addEventListener('resize', resize);
 resize();
@@ -195,7 +193,7 @@ function randPiece() {
   if (level >= 6) pool = pool.concat(TIER3);
   const shape = parseShape(pool[Math.floor(Math.random() * pool.length)]);
   const color = Math.floor(Math.random() * (PALETTE.length - 1)) + 1;
-  return { shape, color, scale: 0.1 };
+  return { shape, color, scale: 0.2 };
 }
 
 function refillTray() {
@@ -380,7 +378,7 @@ function loop() {
   for (let r = 0; r < GRID; r++) {
     for (let c = 0; c < GRID; c++) {
       const x = boardX + c * cell, y = boardY + r * cell;
-      ctx.fillStyle = (r + c) % 2 === 0 ? 'rgba(30, 41, 59, 0.48)' : 'rgba(15, 23, 42, 0.68)';
+      ctx.fillStyle = (r + c) % 2 === 0 ? 'rgba(30, 41, 59, 0.55)' : 'rgba(15, 23, 42, 0.75)';
       ctx.fillRect(x + 1.5, y + 1.5, cell - 3, cell - 3);
       if (grid[r][c] !== 0) {
         const willClear = preview.rClear.includes(r) || preview.cClear.includes(c);
